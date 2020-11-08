@@ -2,10 +2,6 @@ import xpuzzle.game_rules as rules
 from xpuzzle.algorithms.game_state import GameState
 
 
-def sort_open_list(e):
-    return e.get_total_cost()
-
-
 def is_node_on_list(node, list_to_check):
     is_on_list = False
     for list_node in list_to_check:
@@ -20,16 +16,27 @@ def get_state_index(node, list_to_check) -> int:
             return index
 
 
-class UniformCost:
-    def __init__(self, initial_board):
+class XPuzzleSearch:
+    def __init__(self, initial_board, algorithm):
         self.initial_node_state = GameState(initial_board, None)
         self.open_list = []
+
+        # Sorting method based on Search Algorithm
+        self.method = algorithm
 
         # search path
         self.closed_list = [self.initial_node_state]
 
         # cost
         self.total_cost = 0
+
+    def sort_open_list(self, e):
+        if self.method == "ucs":
+            return e.get_total_cost()
+        elif self.method == "gbfs":
+            return e.get_h_cost()
+        elif self.method == "a":
+            return e.get_f_cost()
 
     def run(self):
         current_node_state = self.closed_list[- 1]
@@ -63,7 +70,7 @@ class UniformCost:
                     else:
                         self.open_list.append(next_move_state)
 
-        self.open_list.sort(key=sort_open_list)
+        self.open_list.sort(key=self.sort_open_list)
 
     def make_next_move(self):
         # check in open list for least cost move

@@ -1,4 +1,4 @@
-from xpuzzle.algorithms.uniform_cost import UniformCost
+from xpuzzle.algorithms.x_puzzle_search import XPuzzleSearch
 import numpy as np
 
 
@@ -12,7 +12,7 @@ def fill_2_by_4(input_list):
                      [input_list[4], input_list[5], input_list[6], input_list[7]]], dtype=int)
 
 
-board = fill_2_by_4([0, 2, 3, 4, 6, 5, 1, 7])
+board = fill_2_by_4([0, 1, 2, 3, 4, 5, 6, 7])
 
-uca = UniformCost(board)
-solution = uca.run()
+ucs = XPuzzleSearch(board, "ucs")
+solution = ucs.run()
