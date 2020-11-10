@@ -1,19 +1,18 @@
 from xpuzzle.algorithms.game_state import GameState
 import numpy as np
-
-goal1 = [[1, 2, 3, 4], [5, 6, 7, 0]]
-
-goal2 = [[1, 3, 5, 7], [2, 4, 6, 0]]
+import xpuzzle.algorithms.utility_functions as utility
 
 
 def is_goal(board):
-    print(board)
-    return np.array_equal(goal1, board) or np.array_equal(goal2, board)
+    solutions = utility.get_solutions(board)
+    sol_1 = solutions[0]
+    sol_2 = solutions[1]
+    return np.array_equal(sol_1, board) or np.array_equal(sol_2, board)
 
 
 def get_move_state(board, moving_position, empty_position, move_cost):
     new_board = move(board, moving_position, empty_position)
-    node = GameState(new_board, board)
+    node = GameState(new_board, board, None)
     node.set_move_cost(move_cost)
     # Old empty position is contains the tile that was just moved
     node.set_tile_moved(new_board[empty_position[0]][empty_position[1]])
@@ -52,7 +51,7 @@ def get_moves(board):
     # (logic: if you are here it did not qualify as corner or edge
     else:
         # If true get all possible moves
-        get_interior_moves(board, empty_slot)
+        return get_interior_moves(board, empty_slot)
 
 
 def get_corner_moves(board, empty_slot, max_row_pos, max_column_pos):
@@ -284,13 +283,13 @@ def get_left_edge_moves(board, empty_slot):
     up = get_up(board, empty_slot)
     # down
     down = get_down(board, empty_slot)
-    # right
-    right = get_right(board, empty_slot)
+    # left
+    left = get_left(board, empty_slot)
 
     return {
         "up": up,
         "down": down,
-        "right": right
+        "left": left
     }
 
 
@@ -299,13 +298,13 @@ def get_right_edge_moves(board, empty_slot):
     up = get_up(board, empty_slot)
     # down
     down = get_down(board, empty_slot)
-    # left
-    left = get_left(board, empty_slot)
+    # right
+    right = get_right(board, empty_slot)
 
     return {
         "up": up,
         "down": down,
-        "left": left
+        "right": right
     }
 
 

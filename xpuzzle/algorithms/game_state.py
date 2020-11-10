@@ -2,7 +2,7 @@ import numpy as np
 
 
 class GameState:
-    def __init__(self, board, parent):
+    def __init__(self, board, parent, parent_state):
         self.__node = board
         self.__parent_node = parent
         self.__move_cost = 0
@@ -10,12 +10,19 @@ class GameState:
         self.__g_cost = 0
         self.__h_cost = 0
         self.__f_cost = 0
+        self.__parent_state = parent_state
 
     def get_node(self):
         return self.__node
 
     def set_node(self, board):
         self.__node = board
+
+    def get_parent_state(self):
+        return self.__parent_state
+
+    def set_parent_state(self, parent_state):
+        self.__parent_state = parent_state
 
     def get_parent_node(self):
         return self.__parent_node
@@ -35,11 +42,11 @@ class GameState:
     def set_tile_moved(self, tile_moved):
         self.__tile_moved = tile_moved
 
-    def get_total_cost(self):
+    def get_g_cost(self):
         return self.__g_cost
 
-    def set_total_cost(self, total_cost):
-        self.__g_cost = total_cost
+    def set_g_cost(self, g_cost):
+        self.__g_cost = g_cost
 
     def get_h_cost(self):
         return self.__h_cost
@@ -48,7 +55,7 @@ class GameState:
         self.__h_cost = cost
 
     def set_g_h_f_cost(self, g, h):
-        self.set_total_cost(g)
+        self.set_g_cost(g)
         self.set_h_cost(h)
         self.compute_set_f_cost()
 
