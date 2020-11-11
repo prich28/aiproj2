@@ -58,10 +58,9 @@ class XPuzzleSearch:
         for next_move_state in next_moves:
             if next_move_state is not None:
                 next_move_state.set_parent_state(node_state)
-                # Get the node states and set the total cost
-                if self.method == "ucs" or self.method == "astar":
-                    total_node_cost = next_move_state.get_move_cost() + node_state.get_g_cost()
-                    next_move_state.set_g_cost(total_node_cost)
+                # Get the node states and set the total actual* cost
+                total_node_cost = next_move_state.get_move_cost() + node_state.get_g_cost()
+                next_move_state.set_g_cost(total_node_cost)
 
                 # Calculate heuristic if necessary
                 if self.method == "gbfs" or self.method == "astar":
