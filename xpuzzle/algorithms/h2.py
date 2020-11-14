@@ -7,61 +7,32 @@ def h2(board):
     sol_1 = solution_list[0]
     sol_2 = solution_list[1]
 
+    goal_1_total = pieces_cost(board, sol_1)
+
+    goal_2_total = pieces_cost(board, sol_2)
+
+    if goal_1_total < goal_2_total:
+        return goal_1_total
+    else:
+        return goal_2_total
+
+
+def pieces_cost(board, sol):
     max_row_len = board.shape[0]
     max_col_len = board.shape[1]
 
-    max_row_pos = max_row_len - 1
-    max_column_pos = max_col_len - 1
+    solution_total = 0
+    # What should be in each position
+    for r_index in range(max_row_len):
+        for c_index in range(max_col_len):
+            expected_number = sol[r_index][c_index]
+            if not expected_number == 0:
+                if board[r_index][c_index] != expected_number:
+                    # But where is it?
+                    current_location = np.asarray(np.where(board == expected_number)).T[0]
+                    current_loc_row_len = current_location[0] + 1
+                    current_loc_column_len = current_location[1] + 1
+                    # cost to get it there abs(row diff) + abs(column diff)
+                    solution_total += abs((r_index + 1) - current_loc_row_len) + abs((c_index + 1) - current_loc_column_len)
 
-    # Goal 1
-    # TR
-    # What should be in the top right for goal 1
-    good_tr = sol_1[0][max_column_pos]
-    # But where is it?
-    current_tr = np.asarray(np.where(board == good_tr)).T[0]
-    current_tr_row_len = current_tr[0] + 1
-    current_tr_column_len = current_tr[1] + 1
-
-    # And what is the minimal cost to get it there for goal 1?
-    tr_cost_1 = current_tr_row_len - 1 + max_col_len - current_tr_column_len
-
-    # BL
-    good_bl = sol_1[max_row_pos][0]
-    # But where is it?
-    current_bl = np.asarray(np.where(board == good_bl)).T[0]
-    current_bl_row_len = current_bl[0] + 1
-    current_bl_column_len = current_bl[1] + 1
-
-    # And what is the minimal cost to get it there for goal 1?
-    bl_cost_1 = max_row_len - current_bl_row_len + current_bl_column_len - 1
-
-    cost_1 = tr_cost_1 + bl_cost_1
-
-    # Goal 2
-    # TR
-    # What should be in the top right for goal 2
-    good_tr = sol_2[0][max_column_pos]
-    # But where is it?
-    current_tr = np.asarray(np.where(board == good_tr)).T[0]
-    current_tr_row_len = current_tr[0] + 1
-    current_tr_column_len = current_tr[1] + 1
-
-    # And what is the minimal cost to get it there for goal 2?
-    tr_cost_2 = current_tr_row_len - 1 + max_col_len - current_tr_column_len
-
-    # BL
-    good_bl = sol_2[max_row_pos][0]
-    # But where is it?
-    current_bl = np.asarray(np.where(board == good_bl)).T[0]
-    current_bl_row_len = current_bl[0] + 1
-    current_bl_column_len = current_bl[1] + 1
-
-    # And what is the minimal cost to get it there for goal 2?
-    bl_cost_2 = max_row_len - current_bl_row_len + current_bl_column_len - 1
-
-    cost_2 = tr_cost_2 + bl_cost_2
-
-    if cost_1 > cost_2:
-        return cost_2
-    else:
-        return cost_1
+    return solution_total

@@ -79,6 +79,13 @@ class XPuzzleSearch:
                             self.open_list.append(next_move_state)
                     else:
                         self.open_list.append(next_move_state)
+                else:
+                    # on closed list (for astar)
+                    if self.method == "astar":
+                        closed_node_state = self.closed_list[get_state_index(next_move_state, self.closed_list)]
+                        if closed_node_state.get_f_cost() > next_move_state.get_f_cost():
+                            self.closed_list.remove(closed_node_state)
+                            self.open_list.append(next_move_state)
 
         self.open_list.sort(key=self.sort_open_list)
 
