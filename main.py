@@ -33,17 +33,24 @@ def run(sol_q, algo, stop):
 def print_solution_path(puzzle_num, info, method, h):
     len_sol = 0
     num = str(puzzle_num)
-    dir_path = "solutions/" + num + "/"
-    file_path = dir_path
+    dir_path = "solutions/"
+    puzzle_dir_path = dir_path + num + "/"
 
     if h is None:
-        file_path = file_path + num + "_" + method + "_" + "solution.txt"
+        file_path = puzzle_dir_path + num + "_" + method + "_" + "solution.txt"
     else:
-        file_path = file_path + num + "_" + method + "-" + h + "_" + "solution.txt"
+        file_path = puzzle_dir_path + num + "_" + method + "-" + h + "_" + "solution.txt"
 
-    if not os.path.exists(os.path.dirname(file_path)):
+    if not os.path.exists(os.path.dirname(dir_path)):
         try:
             os.mkdir(dir_path)
+        except OSError as exc:  # Guard against race condition
+            if exc.errno != errno.EEXIST:
+                raise
+
+    if not os.path.exists(os.path.dirname(puzzle_dir_path)):
+        try:
+            os.mkdir(puzzle_dir_path)
         except OSError as exc:  # Guard against race condition
             if exc.errno != errno.EEXIST:
                 raise
@@ -84,16 +91,24 @@ def print_solution_path(puzzle_num, info, method, h):
 def print_search_path(puzzle_num, info, method, h):
     len_search = 0
     num = str(puzzle_num)
-    dir_path = "solutions/" + num + "/"
-    file_path = dir_path
-    if h is None:
-        file_path = file_path + num + "_" + method + "_" + "search.txt"
-    else:
-        file_path = file_path + num + "_" + method + "-" + h + "_" + "search.txt"
+    dir_path = "solutions/"
+    puzzle_dir_path = dir_path + num + "/"
 
-    if not os.path.exists(os.path.dirname(file_path)):
+    if h is None:
+        file_path = puzzle_dir_path + num + "_" + method + "_" + "search.txt"
+    else:
+        file_path = puzzle_dir_path + num + "_" + method + "-" + h + "_" + "search.txt"
+
+    if not os.path.exists(os.path.dirname(dir_path)):
         try:
             os.mkdir(dir_path)
+        except OSError as exc:  # Guard against race condition
+            if exc.errno != errno.EEXIST:
+                raise
+
+    if not os.path.exists(os.path.dirname(puzzle_dir_path)):
+        try:
+            os.mkdir(puzzle_dir_path)
         except OSError as exc:  # Guard against race condition
             if exc.errno != errno.EEXIST:
                 raise
@@ -133,12 +148,18 @@ def print_search_path(puzzle_num, info, method, h):
 
 def print_stats_file(method, h, len_sol, len_search, no_sol, t_cost, exec_time, num_puzzles, ind_sol_paths, ind_search_paths, ind_costs, ind_exec_times):
     dir_path = "stats/"
-    global_stats_file_path = dir_path + method + "-" + h + ".txt"
-
-    all_sol_paths_file_path = dir_path + method + "-" + h + "_sol_paths.txt"
-    all_search_paths_file_path = dir_path + method + "-" + h + "_search_paths.txt"
-    all_costs_file_path = dir_path + method + "-" + h + "_all_costs.txt"
-    all_exec_times_file_path = dir_path + method + "-" + h + "_all_exec_times.txt"
+    if method == "ucs":
+        global_stats_file_path = dir_path + method + ".txt"
+        all_sol_paths_file_path = dir_path + method + "_sol_paths.txt"
+        all_search_paths_file_path = dir_path + method + "_search_paths.txt"
+        all_costs_file_path = dir_path + method + "_all_costs.txt"
+        all_exec_times_file_path = dir_path + method + "_all_exec_times.txt"
+    else:
+        global_stats_file_path = dir_path + method + "-" + h + ".txt"
+        all_sol_paths_file_path = dir_path + method + "-" + h + "_sol_paths.txt"
+        all_search_paths_file_path = dir_path + method + "-" + h + "_search_paths.txt"
+        all_costs_file_path = dir_path + method + "-" + h + "_all_costs.txt"
+        all_exec_times_file_path = dir_path + method + "-" + h + "_all_exec_times.txt"
 
     if not os.path.exists(os.path.dirname(dir_path)):
         try:
@@ -147,35 +168,53 @@ def print_stats_file(method, h, len_sol, len_search, no_sol, t_cost, exec_time, 
             if exc.errno != errno.EEXIST:
                 raise
 
-    avg_len_sol_path = len_sol / num_puzzles
-    avg_len_search_path = len_search / num_puzzles
-    avg_no_sol = no_sol / num_puzzles
-    avg_total_cost = t_cost / num_puzzles
+    if (num_puzzles - no_sol) == 0:
+        avg_len_sol_path = 0
+        avg_len_search_path = 0
+        avg_total_cost = 0
+    else:
+        avg_len_sol_path = len_sol / (num_puzzles - no_sol)
+        avg_len_search_path = len_search / (num_puzzles - no_sol)
+        avg_total_cost = t_cost / (num_puzzles - no_sol)
+
+    avg_no_sol = no_sol / num_puzzles * 100
     avg_exec_time = exec_time / num_puzzles
 
     with open(global_stats_file_path, "w") as stats_file:
         stats_file.write("Average solution length: " + str(round(avg_len_sol_path, 2)) + "\n")
         stats_file.write("Average search length: " + str(round(avg_len_search_path, 2)) + "\n")
-        stats_file.write("Number of no solutions: " + str(no_sol) + "\n")
-        stats_file.write("Average no solutions: " + str(round(avg_no_sol, 2)) + "\n")
+        stats_file.write("Number of 'no solutions': " + str(no_sol) + "\n")
+        stats_file.write("Proportion of 'no solutions': " + str(round(avg_no_sol, 2)) + "%\n")
         stats_file.write("Average total cost: " + str(round(avg_total_cost, 2)) + "\n")
         stats_file.write("Average execution time: " + str(round(avg_exec_time, 2)) + "\n")
 
     with open(all_sol_paths_file_path, "w") as ind_sol_file:
-        ind_sol_file.write(method + " " + h + "\n")
+        ind_sol_file.write(method + " ")
+        if h is not None:
+            ind_sol_file.write(h)
+        ind_sol_file.write("\n")
         ind_sol_file.write(",".join(map(str, ind_sol_paths)))
 
     with open(all_search_paths_file_path, "w") as ind_search_file:
-        ind_search_file.write(method + " " + h + "\n")
+        ind_search_file.write(method + " ")
+        if h is not None:
+            ind_search_file.write(h)
+        ind_search_file.write("\n")
         ind_search_file.write(",".join(map(str, ind_search_paths)))
 
     with open(all_costs_file_path, "w") as ind_costs_file:
-        ind_costs_file.write(method + " " + h + "\n")
+        ind_costs_file.write(method + " ")
+        if h is not None:
+            ind_costs_file.write(h)
+        ind_costs_file.write("\n")
         ind_costs = np.around(ind_costs, decimals=2)
         ind_costs_file.write(",".join(map(str, ind_costs)))
 
     with open(all_exec_times_file_path, "w") as ind_times_file:
-        ind_times_file.write(method + " " + h + "\n")
+        ind_times_file.write(method + " ")
+        if h is not None:
+            ind_times_file.write(h)
+        ind_times_file.write("\n")
         ind_exec_times = np.around(ind_exec_times, decimals=2)
         ind_times_file.write(",".join(map(str, ind_exec_times)))
 
@@ -209,8 +248,9 @@ chosen_h = ""
 while chosen_method != "astar" and chosen_method != "ucs" and chosen_method != "gbfs":
     chosen_method = input("Chose an algorithm (ucs, gbfs, astar): ")
 
-while chosen_h != "h0" and chosen_h != "h1" and chosen_h != "h2":
-    chosen_h = input("Chose a heuristic (h0, h1, h2): ")
+if chosen_method != "ucs":
+    while chosen_h != "h0" and chosen_h != "h1" and chosen_h != "h2":
+        chosen_h = input("Chose a heuristic (h0, h1, h2): ")
 
 puzzle_width = input("Set the puzzle width (number): ")
 puzzle_input = input("Set the name of the puzzles file: ")
@@ -258,6 +298,7 @@ for index, puzzle in enumerate(puzzles):
 
     if sol_closed_list is None:
         num_no_sol += 1
+        ind_total_costs.append(0)
     else:
         ind_total_costs.append(sol_closed_list[-1].get_g_cost())
         total_cost += sol_closed_list[-1].get_g_cost()
