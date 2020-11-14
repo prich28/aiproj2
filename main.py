@@ -123,9 +123,18 @@ def print_search_path(puzzle_num, info, method, h):
         output_string = ""
         while backtrack_node.get_parent_state() is not None:
             flat_board = backtrack_node.get_node().flatten()
-            tile_cost = str(backtrack_node.get_f_cost()) + " " + \
-                        str(backtrack_node.get_g_cost()) + " " + \
-                        str(backtrack_node.get_h_cost()) + " "
+            if method == "ucs":
+                tile_cost = "0" + " " + \
+                            str(backtrack_node.get_g_cost()) + " " + \
+                            "0" + " "
+            elif method == "gbfs":
+                tile_cost = "0" + " " + \
+                            "0" + " " + \
+                            str(backtrack_node.get_h_cost()) + " "
+            elif method == "astar":
+                tile_cost = str(backtrack_node.get_f_cost()) + " " + \
+                            str(backtrack_node.get_g_cost()) + " " + \
+                            str(backtrack_node.get_h_cost()) + " "
 
             puzzle_string = " ".join(map(str, flat_board)) + "\n"
 
@@ -134,9 +143,18 @@ def print_search_path(puzzle_num, info, method, h):
             backtrack_node = closed_list.pop()
 
         # Starting node
-        tile_cost = str(backtrack_node.get_f_cost()) + " " + \
-                    str(backtrack_node.get_g_cost()) + " " + \
-                    str(backtrack_node.get_h_cost()) + " "
+        if method == "ucs":
+            tile_cost = "0" + " " + \
+                        str(backtrack_node.get_g_cost()) + " " + \
+                        "0" + " "
+        elif method == "gbfs":
+            tile_cost = "0" + " " + \
+                        "0" + " " + \
+                        str(backtrack_node.get_h_cost()) + " "
+        elif method == "astar":
+            tile_cost = str(backtrack_node.get_f_cost()) + " " + \
+                        str(backtrack_node.get_g_cost()) + " " + \
+                        str(backtrack_node.get_h_cost()) + " "
 
         output_string = tile_cost + " ".join(map(str, backtrack_node.get_node().flatten())) + "\n" + output_string
         len_search += 1
