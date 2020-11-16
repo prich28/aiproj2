@@ -7,7 +7,7 @@ This program can be run in terminal or the console.
 
 2. Navigate to the desired location on your computer and clone this repository.
 
-3. Create, in the root of the file, a text file that contains a list of puzzles of the same dimension.
+3. Create, in the root of the file, a text file that contains a list of puzzles of the same dimension (it must be at least 2 puzzles!).
 
 4. In the root folder run the command `python3 main.py`
 
