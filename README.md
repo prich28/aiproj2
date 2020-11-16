@@ -1,4 +1,6 @@
 # COMP 472 Project 2
+https://github.com/prich28/aiproj2
+
 The X-Puzzle
 
 This program can be run in terminal or the console.
