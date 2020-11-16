@@ -12,3 +12,8 @@ This program can be run in terminal or the console.
 4. In the root folder run the command `python3 main.py`
 
 5. Follow the prompt of the program.
+
+
+The program will output 2 folders in the root of the project.
+The first folder `solutions` is the output for each puzzle.
+The second folder `stats` is an output giving stats for the given algorithm and heuristic.
