@@ -1,2 +1,14 @@
 # COMP 472 Project 2
 The X-Puzzle
+
+This program can be run in terminal or the console.
+
+1. Create a conda environment with python3 and numpy installed.
+
+2. Navigate to the desired location on your computer and clone this repository.
+
+3. Create, in the root of the file, a text file that contains a list of puzzles of the same dimension.
+
+4. In the root folder run the command `python3 main.py`
+
+5. Follow the prompt of the program.
